@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCTV Access</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #050505;
+      color: #e8e8e8;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: none;
+      padding: 24px 16px;
+    }
+
+    .active {
+      display: block;
+    }
+
+    .login-box {
+      max-width: 480px;
+      margin: 120px auto 0;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .login-box h1 {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .login-box p {
+      color: #888;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid #444;
+      background: #000;
+      color: white;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #1f8cff;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .error {
+      margin-top: 12px;
+      color: #ff4d4d;
+      font-size: 14px;
+      display: none;
+    }
+
+    .password-note {
+      color: #888;
+      font-size: 12px;
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .starred-note {
+      color: #888;
+      font-size: 12px;
+      margin-bottom: 12px;
+      max-width: 430px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cctv-header {
+      max-width: 430px;
+      margin: 0 auto 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #333;
+    }
+
+    .cctv-header h1 {
+      font-size: 20px;
+      margin: 0;
+    }
+
+    .status {
+      color: #ff3b3b;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .live-feed {
+      max-width: 430px;
+      margin: 0 auto 24px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .live-feed img {
+      width: 100%;
+      display: block;
+      filter: contrast(1.1) brightness(0.85) saturate(0.8);
+    }
+
+    .live-label {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 0, 0, 0.85);
+      color: white;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .timestamp {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .section-title {
+      max-width: 430px;
+      margin: 0 auto 12px;
+      font-size: 16px;
+      color: #ccc;
+    }
+
+    .scene-list {
+      max-width: 430px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .scene-card {
+      width: 100%;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .scene-card img {
+      width: 100%;
+      display: block;
+      filter: grayscale(0.2) contrast(1.1);
+    }
+
+    .scene-info {
+      padding: 10px 12px;
+    }
+
+    .scene-info h3 {
+      margin: 0 0 4px;
+      font-size: 15px;
+    }
+
+    .scene-info p {
+      margin: 0;
+      font-size: 13px;
+      color: #999;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loginPage" class="page active">
+    <div class="login-box">
+      <h1>守一號電視系統只限一級授權人員使用</h1>
+      <p>輸入密碼以繼續</p>
+
+      <input 
+        type="password" 
+        id="passwordInput" 
+        placeholder="密碼"
+      />
+
+      <div class="password-note">
+        注意：密碼有大小寫區分。
+      </div>
+
+      <button onclick="checkPassword()">進入系統
+</button>
+
+      <div id="errorMessage" class="error">
+        密碼錯誤
+      </div>
+    </div>
+  </div>
+
+  <div id="cctvPage" class="page">
+    <div class="cctv-header">
+      <h1>守一號鏡頭
+      </h1>
+      <div class="status">● LIVE FEED</div>
+    </div>
+
+    <div class="live-feed">
+      <img src="image/cctv-live.png" alt="Live canteen CCTV" />
+      <div class="live-label">LIVE</div>
+    </div>
+
+    <div class="section-title">★ Starred Scenes</div>
+
+    <div class="starred-note">
+      影片將於一小時後自動刪除
+    </div>
+
+    <div class="scene-list">
+
+      <div class="scene-card">
+        <img src="image/cctv-3112.png" alt="Starred CCTV scene 1" />
+        <div class="scene-info">
+          <h3>★ 12月31日 — 21:35</h3>
+          <p>林嘉信實驗室久留</p>
+        </div>
+      </div>
+
+      <div class="scene-card">
+        <img src="image/cctv-2411.png" alt="Starred CCTV scene 2" />
+        <div class="scene-info">
+          <h3>★ 11月24日 — 15:48</h3>
+          <p>律師團隊於傅霆琛會面</p>
+        </div>
+      </div>
+
+      <div class="scene-card">
+        <img src="scene-3.jpg" alt="Starred CCTV scene 3" />
+        <div class="scene-info">
+          <h3>★ 14 May — 02:07</h3>
+          <p>Lights flicker near service counter</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const correctPassword = "1234";
+
+    function checkPassword() {
+      const input = document.getElementById("passwordInput").value;
+      const error = document.getElementById("errorMessage");
+
+      if (input === correctPassword) {
+        document.getElementById("loginPage").classList.remove("active");
+        document.getElementById("cctvPage").classList.add("active");
+      } else {
+        error.style.display = "block";
+      }
+    }
+
+  
+  </script>
+
+</body>
+</html>
